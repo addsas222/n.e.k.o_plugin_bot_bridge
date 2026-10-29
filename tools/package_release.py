@@ -40,21 +40,19 @@ ANYWHERE_SKIP = {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 SKIP_SUFFIX = (".pyc", ".pyo", ".pyd", ".log", ".bak", ".compilecheck")
 SKIP_NAME_PARTS = (".bak-", ".bak.", ".DS_Store")
 
-#: 打进 zip 时按文本处理、需要把 CRLF 归一成 LF 的后缀。
-#: 为什么必须做：CI 用 LF 检出、本机 git 用 CRLF，同一份源码打出来的 zip 字节不同，
-#: 「本地验过的 sha」和「发出去的 sha」就对不上，发布无法自证。
-TEXT_SUFFIX = {
-    ".py", ".pyi", ".md", ".txt", ".toml", ".json", ".yaml", ".yml",
-    ".tsx", ".ts", ".mjs", ".cjs", ".js", ".css", ".html", ".cfg", ".ini",
-}
-#: 固定时间戳（zip 会记录每个条目的 mtime；不固定就每次构建都不同）
+#: 打进 zip 时把 CRLF 归一成 LF。
+#: 为什么必须做：CI 用 LF 检出、本机 git 用 CRLF（actions/checkout 在 Windows 上会设
+#: core.autocrlf），同一份源码打出来的 zip 字节不同，「本地验过的 sha」和「发出去的
+#: sha」就对不上，发布无法自证。
+#: 判据用「内容里没有 NUL 字节」而不是后缀白名单 —— 像 .gitignore 这种无扩展名的
+#: 文本文件，用白名单会漏掉（实测就漏了它）。
 FIXED_ZIP_TIME = (2026, 10, 29, 0, 0, 0)
 
 
 def _payload(path: Path) -> bytes:
-    """读条目内容；文本文件把 CRLF 归一成 LF（见 TEXT_SUFFIX 的说明）。"""
+    """读条目内容；可按文本处理的把 CRLF 归一成 LF，二进制原样保留。"""
     raw = path.read_bytes()
-    if path.suffix.lower() in TEXT_SUFFIX:
+    if b"\x00" not in raw:
         return raw.replace(b"\r\n", b"\n")
     return raw
 
