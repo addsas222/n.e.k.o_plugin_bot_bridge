@@ -164,7 +164,11 @@ async def test_framework_dir_loads_plugins_from_external_source() -> None:
     try:
         assert "maibot:hello_ext" in registry.plugins
         # 根目录扫描照常工作，两边互不干扰
-        assert Path(registry.get("maibot:hello_ext").manifest.path) == external / "hello_ext"
+        # 比真实路径：Windows runner 上 tempfile.mkdtemp 可能给 8.3 短名
+        # （C:/Users/RUNNER~1/...），与插件自己解析出的长名不是同一个字符串。
+        assert Path(registry.get("maibot:hello_ext").manifest.path).resolve() == (
+            external / "hello_ext"
+        ).resolve()
     finally:
         await registry.stop()
 
@@ -186,7 +190,7 @@ async def test_framework_dir_wins_over_plugins_root_on_same_key() -> None:
     try:
         loaded = registry.get("maibot:dup")
         assert loaded is not None
-        assert Path(loaded.manifest.path) == external / "dup"
+        assert Path(loaded.manifest.path).resolve() == (external / "dup").resolve()
     finally:
         await registry.stop()
 
