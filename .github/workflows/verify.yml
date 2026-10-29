@@ -12,6 +12,14 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      # 测试要 import 真实的 plugin.sdk（见 tests/support.py），所以得有一棵
+      # N.E.K.O. 源码树。上游仓库 570MB，用 sparse-checkout 只取 plugin/。
+      - name: Checkout N.E.K.O. source tree (plugin.sdk)
+        uses: actions/checkout@v4
+        with:
+          repository: addsas222/N.E.K.O
+          path: neko
+          sparse-checkout: plugin
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -22,7 +30,10 @@ jobs:
         run: python -m pip install --upgrade pip pydantic msgpack pyyaml httpx aiohttp pytest pytest-asyncio
       - name: Unit, integration and packaging tests
         env:
-          NEKO_SOURCE_ROOT: ${{ github.workspace }}/../neko
+          # 必须指向上面 sparse-checkout 出来的那棵树（旧值 ../neko 在 runner 上不存在）
+          NEKO_SOURCE_ROOT: ${{ github.workspace }}/neko
         run: python -m pytest tests -q
       - name: End-to-end harness (offline)
+        env:
+          NEKO_SOURCE_ROOT: ${{ github.workspace }}/neko
         run: python -X utf8 tests/stub_run.py
