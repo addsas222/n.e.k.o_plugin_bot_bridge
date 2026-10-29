@@ -12,3 +12,6 @@ tests/live-report.txt
 # 机器本地运行配置（首次运行由 config.example.toml 生成，不含在仓库里）
 # 必须锚定到仓库根：不加开头斜杠会连 shims/astrbot/core/config/ 一起忽略掉
 /config/
+
+# 打包产物（tools/package_release.py 的输出）
+/dist/

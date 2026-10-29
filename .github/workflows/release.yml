@@ -1,0 +1,50 @@
+name: release
+
+# tag 推上来就打包并挂到 Release；也可以手动对某个已有 tag 重跑（--clobber 覆盖资产）。
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "已存在的 tag（如 v0.2.0）"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      # 与 verify 一致：检出到 bot_bridge/，包内顶层目录才是 bot_bridge
+      - uses: actions/checkout@v4
+        with:
+          path: bot_bridge
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build plugin zip
+        working-directory: bot_bridge
+        run: python -X utf8 tools/package_release.py --out dist
+
+      - name: Create or update the GitHub Release
+        shell: bash
+        working-directory: bot_bridge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          echo "tag=$TAG"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release 已存在，更新资产"
+          else
+            gh release create "$TAG" --title "bot_bridge $TAG" --notes-from-tag
+          fi
+          gh release upload "$TAG" dist/*.zip --clobber
+          gh release view "$TAG" --json url,assets --jq '.url, (.assets[].name)'
