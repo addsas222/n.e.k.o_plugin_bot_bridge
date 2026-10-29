@@ -11,7 +11,13 @@ jobs:
   tests:
     runs-on: windows-latest
     steps:
+      # 必须检出到 bot_bridge/ 子目录：tests/support.py 会把插件挂成
+      # ``plugin.plugins.bot_bridge``，靠的是「父目录下有个叫 bot_bridge 的目录」。
+      # GitHub 默认把仓库检出到 <repo-name>/（这里是 n.e.k.o_plugin_bot_bridge），
+      # 名字对不上就会 ModuleNotFoundError: No module named 'plugin.plugins.bot_bridge'。
       - uses: actions/checkout@v4
+        with:
+          path: bot_bridge
       # 测试要 import 真实的 plugin.sdk（见 tests/support.py），所以得有一棵
       # N.E.K.O. 源码树。上游仓库 570MB，用 sparse-checkout 只取必需的两处：
       #   plugin/  —— SDK 本体
@@ -34,11 +40,13 @@ jobs:
         # pytest-asyncio — 异步用例
         run: python -m pip install --upgrade pip pydantic msgpack pyyaml httpx aiohttp pytest pytest-asyncio
       - name: Unit, integration and packaging tests
+        working-directory: bot_bridge
         env:
           # 必须指向上面 sparse-checkout 出来的那棵树（旧值 ../neko 在 runner 上不存在）
           NEKO_SOURCE_ROOT: ${{ github.workspace }}/neko
         run: python -m pytest tests -q
       - name: End-to-end harness (offline)
+        working-directory: bot_bridge
         env:
           NEKO_SOURCE_ROOT: ${{ github.workspace }}/neko
         run: python -X utf8 tests/stub_run.py
