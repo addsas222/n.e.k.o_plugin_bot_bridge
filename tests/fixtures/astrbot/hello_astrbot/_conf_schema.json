@@ -1,0 +1,27 @@
+{
+  "greeting": {
+    "description": "默认问候语",
+    "type": "string",
+    "default": "Hello"
+  },
+  "max_items": {
+    "description": "一次最多返回的条数",
+    "type": "int",
+    "default": 3
+  },
+  "verbose": {
+    "description": "是否输出详细日志（无 default，取类型默认 False）",
+    "type": "bool"
+  },
+  "nested": {
+    "description": "嵌套配置",
+    "type": "object",
+    "items": {
+      "token": {
+        "description": "nested token",
+        "type": "string",
+        "default": "t"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+name: hello_astrbot
+display_name: Hello AstrBot (fixture)
+desc: bot_bridge AstrBot 兼容层的测试插件
+short_desc: 兼容层测试插件
+version: 1.2.3
+author: neko-tests
+repo: https://example.invalid/hello_astrbot
+astrbot_version: ">=4.0.0"
+support_platforms:
+  - aiocqhttp
+  - telegram

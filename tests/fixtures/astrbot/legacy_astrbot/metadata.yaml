@@ -1,0 +1,5 @@
+name: legacy_astrbot
+display_name: Legacy AstrBot (fixture)
+desc: bot_bridge AstrBot 兼容层的旧版插件（不用 Star / 装饰器）测试插件
+version: 2.0.0
+author: neko-tests

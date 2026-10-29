@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "bot_bridge: tests",
+      "type": "shell",
+      "command": "python -m pytest tests -q",
+      "options": {"env": {"NEKO_SOURCE_ROOT": "${workspaceFolder}/../neko"}},
+      "group": {"kind": "test", "isDefault": true},
+      "problemMatcher": []
+    },
+    {
+      "label": "bot_bridge: stub run (offline)",
+      "type": "shell",
+      "command": "python -X utf8 tests/stub_run.py",
+      "problemMatcher": []
+    }
+  ]
+}

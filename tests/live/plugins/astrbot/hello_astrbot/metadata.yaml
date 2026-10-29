@@ -1,0 +1,5 @@
+name: hello_astrbot
+desc: 示例 AstrBot 插件，用于验证 bot_bridge 的 AstrBot 兼容层
+version: v1.0.0
+author: local
+repo: https://example.invalid/hello_astrbot

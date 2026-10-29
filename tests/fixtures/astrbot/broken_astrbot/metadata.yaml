@@ -1,0 +1,4 @@
+name: broken_astrbot
+desc: 只有 metadata.yaml、没有入口文件的目录（detect 应当返回 None）
+version: 1.0.0
+author: neko-tests

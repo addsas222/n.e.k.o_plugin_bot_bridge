@@ -1,0 +1,12 @@
+[project]
+name = "neko-bot-bridge"
+version = "0.1.0"
+description = "Load MaiBot / NoneBot2 / AstrBot / Koishi plugins inside N.E.K.O. as a plugin adapter"
+requires-python = ">=3.11"
+# 故意不声明外部依赖：外来框架的 SDK 走 vendor/ 目录或宿主自带的包，
+# 校验器的 vendor 布局检查只在声明了依赖时才生效。
+dependencies = []
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

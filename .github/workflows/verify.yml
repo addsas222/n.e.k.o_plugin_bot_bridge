@@ -1,0 +1,28 @@
+name: verify
+
+# 注意：测试需要一棵 N.E.K.O. 源码树（`plugin.sdk.*` 从那里导入）。
+# 用法：把仓库与 neko 源码树放在同一级，或用 NEKO_SOURCE_ROOT 指定路径。
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        # pydantic / msgpack — 宿主 SDK 与 MaiBot SDK 需要
+        # pyyaml — AstrBot 的 metadata.yaml 需要
+        # pytest-asyncio — 异步用例
+        run: python -m pip install --upgrade pip pydantic msgpack pyyaml httpx aiohttp pytest pytest-asyncio
+      - name: Unit, integration and packaging tests
+        env:
+          NEKO_SOURCE_ROOT: ${{ github.workspace }}/../neko
+        run: python -m pytest tests -q
+      - name: End-to-end harness (offline)
+        run: python -X utf8 tests/stub_run.py

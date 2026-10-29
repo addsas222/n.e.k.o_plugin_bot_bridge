@@ -1,0 +1,25 @@
+{
+  "manifest_version": 1,
+  "name": "Legacy MaiBot 测试插件",
+  "version": "0.9.0",
+  "description": "bot_bridge 的 MaiBot 旧版（src.plugin_system）兼容层测试插件。",
+  "author": {
+    "name": "bot_bridge tests",
+    "url": "https://github.com/local/bot-bridge"
+  },
+  "license": "MIT",
+  "host_application": {
+    "min_version": "0.9.1",
+    "max_version": "0.11.1"
+  },
+  "keywords": [
+    "legacy",
+    "test"
+  ],
+  "categories": [
+    "Test"
+  ],
+  "repository_url": "https://github.com/local/bot-bridge",
+  "default_locale": "zh-CN",
+  "locales_path": "_locales"
+}

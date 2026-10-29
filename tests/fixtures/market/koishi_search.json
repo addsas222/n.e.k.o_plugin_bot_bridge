@@ -1,0 +1,40 @@
+{
+  "objects": [
+    {
+      "package": {
+        "name": "koishi-plugin-dataview",
+        "version": "2.7.8",
+        "description": "View Database in Koishi Console",
+        "keywords": ["bot", "chatbot", "koishi", "plugin", "database"],
+        "publisher": { "username": "hieuzest", "email": "x@example.invalid" },
+        "links": { "repository": "https://github.com/hieuzest/koishi-plugin-dataview" },
+        "date": "2025-02-28T11:23:29.737Z"
+      },
+      "downloads": { "lastMonth": 1234 }
+    },
+    {
+      "package": {
+        "name": "@scope/koishi-plugin-scoped",
+        "version": "0.2.1",
+        "description": "scoped tarball URL 的编码要用 %2F",
+        "keywords": ["koishi"],
+        "publisher": { "username": "scoped-pub", "email": "s@example.invalid" },
+        "links": null,
+        "date": "2025-01-01T00:00:00.000Z"
+      },
+      "downloads": { "lastMonth": 5 }
+    },
+    {
+      "package": {
+        "name": "not-a-koishi-plugin-at-all",
+        "version": "9.9.9",
+        "description": "名字不带前缀也不带 koishi 关键字——桥接层不过滤它（清单以 npm 搜索为准）",
+        "keywords": ["unrelated"],
+        "publisher": { "username": "other", "email": "o@example.invalid" },
+        "date": "2024-12-31T00:00:00.000Z"
+      },
+      "downloads": { "lastMonth": 0 }
+    }
+  ],
+  "total": 5052
+}

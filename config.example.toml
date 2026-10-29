@@ -1,0 +1,152 @@
+# bot_bridge 运行配置模板。
+#
+# N.E.K.O 第一次需要运行配置时会把这份内容复制到
+#   %LOCALAPPDATA%\N.E.K.O\plugins\bot_bridge\config\plugin.toml
+# 之后真正生效的是那一份。改这里不会覆盖已有配置。
+
+[plugin_runtime]
+enabled = true
+auto_start = true
+
+[bridge]
+# 机器人插件根目录。留空 = 用 <插件数据目录>/plugins，也就是
+#   %LOCALAPPDATA%\N.E.K.O\plugins\bot_bridge\data\plugins
+# 把机器人插件目录（MaiBot / NoneBot2 / AstrBot / Koishi 等；或插件目录的父目录）丢进那里即可。
+plugins_root = ""
+
+# 只启用这些框架的兼容层；留空 = 全部启用。
+# 取值：maibot / nonebot / astrbot / hoshino / discord
+enabled_frameworks = []
+
+# NoneBot2 的 OneBot 适配器版本覆盖：auto（默认）/ v11 / v12
+#
+# auto  = 加载每个插件时扫它的源码：只 import 了 onebot.v12 → 用 v12；
+#         其余（含两个都 import、或都没 import）→ 用 v11。
+# v11/v12 = **强制**所有 NoneBot 插件用这个版本（覆盖扫描结果）。
+#         注意：给只认 v11 的插件强塞 v12 事件，它的 isinstance 判断会全部落空、
+#         命令不再命中 —— 只在「双协议插件要走 v12 分支」这类场景才这么设。
+# 认的写法：auto / v11 / v12 / onebot.v11 / ~onebot.v12（大小写不敏感）。
+nonebot_adapter = "auto"
+
+# 单个机器人插件启停开关（**镜像**）：面板 / bridge_set_plugin 会把结果写到这里，
+# 但真正生效的是 <插件数据目录>/disabled_plugins.json（宿主配置写回在真机上会超时）。
+# 因此：装机之后再改这里**不能**解除已有禁用（只在首次运行/没有状态文件时被采纳）；
+# 要停用/恢复请用面板的「停止 / 启动」，或调 bridge_set_plugin 入口。
+# 例：disabled_plugins = ["noisy_plugin"]
+disabled_plugins = []
+
+# 每个兼容层最多加载多少个插件（防止一次性拉起整个插件市场）。
+max_plugins_per_framework = 32
+
+# 导入外部插件失败时是否继续加载其余插件。
+continue_on_error = true
+
+# 外来插件的命令是否注册成 N.E.K.O 的对话期工具（LLM 可以直接调用）。
+expose_commands_as_tools = true
+
+# 外来插件的工具是否注册成 N.E.K.O 的对话期工具。
+expose_plugins_tools = true
+
+# 外来插件向对话推送消息时默认的可见性 / AI 行为（可被插件自身覆盖）。
+# visibility: chat / hud（空列表 = 用户看不到原文）
+# ai_behavior: respond（进上下文并立刻起 turn）/ read（只进上下文）/ blind（不进上下文）
+default_visibility = ["chat"]
+default_ai_behavior = "respond"
+
+# 外来插件推送的文本长度上限（字符），超出会截断，避免灌爆对话上下文。
+max_push_chars = 4000
+
+# 外来插件命令/工具的单次调用超时（秒）。
+call_timeout = 25.0
+
+# 是否把外来插件的日志转发到 N.E.K.O 插件日志。
+forward_plugin_logs = true
+
+# 一次最多把多少个外来命令/工具注册成对话期工具（防止工具列表被灌爆）。
+max_exposed_tools = 40
+
+# ——— 入站通道 ———
+# 显式入口 / 对话期工具「bridge_run_command」是稳定入站路径。
+# 下面这条是可选的总线轮询：把 N.E.K.O. 的对话轮次读出来喂给外来插件，
+# 依赖宿主往 conversations 存储写轮次，属于 best-effort，默认关闭。
+poll_conversations = false
+poll_interval_seconds = 10
+# 只把能识别为“用户发言”的轮次交给外来插件（推荐保持 true，避免猫娘自己的话触发命令）。
+poll_user_only = true
+
+# ——— 模型网关 usage id ———
+# 必须与 plugin.toml 里 [plugin.models.<usage_id>] 的声明一致，并且宿主已绑定模型槽，
+# 否则 llm.* 能力会返回结构化失败（403 model_usage_not_bound）。
+llm_usage_id = "chat"
+embedding_usage_id = "embedding"
+
+# 各框架**单独的插件源目录**：想让某个框架从别的位置读插件（比如现成的 Koishi
+# 实例目录、已有的 NoneBot 插件目录）就在这里指给桥，不用把文件搬进 plugins_root。
+#   * 只影响「从哪里读」：目录不存在只告警跳过（不代建——多半是路径写错了）；
+#   * 同一插件同时出现在框架源目录和 plugins_root 时，框架源目录优先；
+#   * 从这里加载的插件不受 bridge_delete_plugin 的删除授权（删除只允许 plugins_root
+#     里面的东西，外部目录可能是真实的机器人安装）；
+#   * koishi 注意：兼容层要把 koishi-host.mjs / 协议桩写进插件目录的祖先链
+#     （Node 裸导入解析靠祖先链）。指向外部目录时桥只补缺失文件，**绝不覆写**
+#     已有的 koishi-host.mjs / node_modules，不会动你现有实例的依赖。
+# 取值键 = 框架名（maibot / nonebot / astrbot / hoshino / discord / koishi），
+# 未启用或写错的框架名会被忽略并告警。
+[bridge.framework_dirs]
+# koishi = "D:/bots/koishi/plugins"
+# nonebot = "D:/bots/nonebot/plugins"
+
+# ——— 安全校验（加载前静态扫描）———
+# 第三方插件是直接 import 进本进程（NoneBot/AstrBot）或起 Node 子进程（Koishi）的，
+# framework_dirs 又允许从任意目录读插件 —— 加载前对插件源码做一遍启发式扫描：
+#   * dangerous：动态执行（eval/exec/compile/__import__/new Function）、进程创建
+#     （subprocess / os.system / child_process）、危险反序列化（pickle/marshal.loads）、
+#     ctypes 原生调用；
+#   * warning：递归删除目录、同行带 .. 的按路径删除 —— 常见于正当代码，只提示不拦。
+# 边界（如实）：这是 tripwire 不是沙箱，扫不出混淆/编码后的恶意代码。
+[bridge.security_scan]
+enabled = true
+# report = 只在日志/面板亮灯，照常加载；enforce = 发现 dangerous 命中就拒绝加载
+mode = "report"
+
+[bridge.capabilities]
+# 能力映射开关：关掉后对应能力直接返回结构化“不支持”，不再尝试映射到 N.E.K.O。
+# storage 只拦存储 API（MaiBot database.*、AstrBot put/get/delete_kv_data）；
+# 交给插件的数据目录路径拦不住（插件可以直接读写文件）。
+# plugin_call 只拦调 N.E.K.O. 插件；本桥已加载插件之间的 api.call 不受影响。
+send = true
+llm = true
+storage = true
+config = true
+plugin_call = true
+chat_query = true
+
+# ——— 插件市场 ———
+# 浏览官方插件索引（MaiBot 插件仓库 / NoneBot 商店 / AstrBot 市场），
+# 并把选中的插件装进 plugins_root/<框架>/<插件>。
+[bridge.market]
+# 关掉后市场入口与搜索工具都不可用（桥接层本身不受影响）。
+enabled = true
+
+# 是否允许从市场安装插件。安装 = 把第三方代码写进插件目录，请确认你信任来源。
+# 注意：安装只通过 bridge_market_install 入口（插件管理器/HTTP）触发，
+# 不会作为对话期工具暴露给模型自动调用。
+allow_install = true
+
+# 只启用这些市场源；留空 = 全部（maibot / nonebot / astrbot / koishi）。
+sources = []
+
+# 索引 URL 在被墙/证书报错时依次尝试的前缀镜像（默认 ghproxy）。
+mirror_prefixes = ["https://ghproxy.net/"]
+
+# 额外的允许主机（默认白名单见 bridge/market.py；在这里加，例如官方 AstrBot 市场）。
+allow_hosts = []
+
+# 索引缓存时长（秒）。
+cache_ttl_seconds = 600
+
+# 单次 HTTP 超时与各类体积/条目上限。
+timeout = 60.0  # 单个市场源「一次完整抓取」的总预算（直连 + 各镜像均分）
+max_archive_bytes = 33554432   # 下载包体积上限（32 MiB）
+max_extract_bytes = 134217728  # 解压后总体积上限（默认 = 压缩包的 4 倍）
+max_files = 5000               # 解压文件数上限
+max_entries_per_source = 500   # 单次搜索从每个源最多取多少条（索引本身不截断）

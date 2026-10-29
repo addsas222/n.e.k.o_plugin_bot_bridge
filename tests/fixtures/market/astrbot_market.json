@@ -1,0 +1,62 @@
+{
+  "$meta": {
+    "schema_version": 1,
+    "name": "AstrBot Official Plugin Market",
+    "version": "2026-09-25T04:20:14.130231Z",
+    "homepage": "https://cloud.astrbot.app",
+    "repository": "https://github.com/AstrBotDevs/astrbot-cloud",
+    "description": "AstrBot 官方插件市场",
+    "updated_at": "2026-09-25T04:20:14.130231Z"
+  },
+  "Sham1k0/astrbot_plugin_get_px": {
+    "author": "Sham1k0",
+    "name": "astrbot_plugin_get_px",
+    "version": "3.8.0",
+    "repo": "https://github.com/shitianyaa/astrbot_plugin_get_px",
+    "desc": "通过 Lolicon 标签搜索或随机获取插画，失败时可用 Pixiv refresh_token 回退到搜索或推荐作品。内容安全支持全局规则与群/用户独立规则互斥，以及按字段批量应用现有策略；同时提供每日签到、群签到排行、主题商店、万象画卷联动与 WebUI 管理中心。",
+    "display_name": "画境拾珍",
+    "download_url": "https://astrbot-cloud-test-s3.astrbot.app/plugins/releases/shitianyaa/astrbot_plugin_get_px/3.8.0/astrbot_plugin_get_px-3.8.0-cbd989f0863b.zip",
+    "logo": "https://astrbot-cloud-test-s3.astrbot.app/plugins/assets/shitianyaa/astrbot_plugin_get_px/e1d1a9273cadb8e2f68ded917c56acee331cb79fb83342f766bbbd378a7c65ca.png",
+    "category": "其他",
+    "support_platforms": [
+      "aiocqhttp"
+    ],
+    "astrbot_version": ">=4.16",
+    "updated_at": "2026-09-12T07:51:12.318023Z",
+    "commit_sha": "cbd989f0863b9863997d9536ec0debf40cfc2b98",
+    "stars": 20,
+    "download_count": 3443
+  },
+  "Zinc-acetate/astrbot_plugin_codeforces_helper": {
+    "author": "Zinc-acetate",
+    "name": "astrbot_plugin_codeforces_helper",
+    "version": "1.3.3",
+    "repo": "https://github.com/Zinc-acetate/astrbot_plugin_codeforces_helper",
+    "desc": "面向 QQ 群的 Codeforces 训练助手，支持 AC 记录同步、Rating 缓存、排行榜、比赛提醒、定时播报和 Web 管理后台。",
+    "display_name": "Codeforces 训练助手",
+    "download_url": "https://astrbot-cloud-test-s3.astrbot.app/plugins/releases/Zinc-acetate/astrbot_plugin_codeforces_helper/1.3.3/astrbot_plugin_codeforces_helper-1.3.3-da65a2ffe306.zip",
+    "category": "其他",
+    "support_platforms": [
+      "aiocqhttp"
+    ],
+    "astrbot_version": ">=4.0.0,<5.0.0",
+    "updated_at": "2026-09-13T07:45:01.035516Z",
+    "commit_sha": "da65a2ffe306bbc29e6c61c54a22d3470fca07d3",
+    "stars": 3,
+    "download_count": 796
+  },
+  "Matsuko/astrbot_plugin_matsuko_cover": {
+    "author": "Matsuko",
+    "name": "astrbot_plugin_matsuko_cover",
+    "version": "2.13.0",
+    "repo": "https://github.com/sdfsfsk/matsuko_cover",
+    "desc": "🐱 AI翻唱插件（支持 RVC、SVC-Fusion、SoulX-SVCVC 参考音色、随机种子、QQ音乐、本地音频与 LLM 点歌）",
+    "display_name": "AI点歌",
+    "download_url": "https://astrbot-cloud-test-s3.astrbot.app/plugins/releases/sdfsfsk/astrbot_plugin_matsuko_cover/2.13.0/astrbot_plugin_matsuko_cover-2.13.0-4ee661ad0b6f.zip",
+    "category": "其他",
+    "updated_at": "2026-09-13T03:15:38.237577Z",
+    "commit_sha": "4ee661ad0b6fdb46993e77410c280a6900418f1f",
+    "stars": 17,
+    "download_count": 3103
+  }
+}

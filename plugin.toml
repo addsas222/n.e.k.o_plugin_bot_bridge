@@ -1,0 +1,126 @@
+[plugin]
+id = "bot_bridge"
+name = "机器人插件兼容桥 / Bot Plugin Bridge"
+type = "adapter"
+entry = "plugin.plugins.bot_bridge:BotBridgePlugin"
+description = "把 MaiBot / NoneBot2 / AstrBot / HoshinoBot / discord.py / Koishi 生态的机器人插件加载进 N.E.K.O：它们的命令、工具、事件处理器变成 N.E.K.O 的入口与对话期工具，它们的发送 / 大模型 / 存储调用回落到 N.E.K.O 自己的能力上。Koishi 插件经 Node 子进程宿主运行（command/action/session.send 子集），市场源读取各生态的插件市场 JSON 索引。"
+short_description = "Load MaiBot / NoneBot2 / AstrBot / HoshinoBot / discord.py / Koishi plugins inside N.E.K.O: foreign commands and tools become NEKO entries and LLM tools; send/LLM/storage calls fall back to NEKO capabilities. Markets are read from each ecosystem's market JSON index."
+keywords = [
+    "bot",
+    "bridge",
+    "adapter",
+    "maibot",
+    "nonebot",
+    "astrbot",
+    "hoshino",
+    "discord",
+    "koishi",
+    "Koishi",
+    "兼容",
+    "插件",
+    "转接",
+]
+version = "0.2.0"
+
+[plugin.author]
+name = "local"
+
+[plugin.i18n]
+default_locale = "zh-CN"
+locales_dir = "i18n"
+
+[plugin.sdk]
+recommended = ">=0.1.0,<0.2.0"
+supported = ">=0.1.0,<0.3.0"
+
+# 模型需求声明：宿主据此把模型槽绑定给本插件，外来插件的 llm.* 能力走这条通道。
+# 未绑定时模型网关会返回 403 model_usage_not_bound，桥接层会把该错误原样回给调用方。
+[plugin.models.chat]
+label = "机器人插件对话补全"
+description = "bot_bridge 代外来机器人插件（MaiBot / NoneBot2 / AstrBot / HoshinoBot / discord.py / Koishi）调用 N.E.K.O. 的大模型。"
+required = true
+capabilities = ["text", "tool_calling"]
+
+[plugin.models.embedding]
+label = "机器人插件文本向量化"
+description = "外来机器人插件请求文本向量时使用；未绑定则该能力返回结构化失败。"
+required = false
+capabilities = ["text"]
+
+# ——— 托管界面（Hosted UI）———
+# 面板入口用 .tsx 后缀 → 由插件管理器在线编译；context 必须与 @ui.context(id=...) 一致。
+[plugin.ui]
+enabled = true
+
+[[plugin.ui.panel]]
+id = "dashboard"
+title = "机器人插件兼容桥"
+entry = "ui/panel.tsx"
+context = "dashboard"
+permissions = ["state:read", "action:call"]
+
+[[plugin.ui.guide]]
+id = "quickstart"
+title = "快速上手"
+entry = "docs/quickstart.md"
+permissions = ["state:read"]
+
+# ——— 静态入口声明 ———
+# 宿主给托管界面授权动作时，用「入口预览」判断某个 entry 是否存在；预览主要来自
+# 它在加载插件时缓存的模块扫描，插件代码热改后那份缓存不会更新。把入口在这里声明一遍，
+# 预览就有一条不依赖模块缓存的通路（见 plugin/core/registry.py::_effective_entries）。
+# 这里只声明 id/名称/描述；参数 schema 仍然由 @plugin_entry 在运行时提供，避免两处漂移。
+[[plugin.entries]]
+id = "bridge_status"
+name = "兼容桥状态"
+description = "查看已加载的机器人插件、各框架兼容层状态与最近一次错误。"
+[[plugin.entries]]
+id = "bridge_list_plugins"
+name = "列出机器人插件"
+description = "列出所有已加载的机器人插件（MaiBot / NoneBot2 / AstrBot / Koishi 等）及其命令、工具、事件。"
+[[plugin.entries]]
+id = "bridge_run_command"
+name = "运行机器人插件命令"
+timeout = 90.0
+description = "把一条用户消息交给外来机器人插件匹配并执行。"
+[[plugin.entries]]
+id = "bridge_call_api"
+name = "调用机器人插件接口"
+timeout = 90.0
+description = "调用外来机器人插件对外暴露的 API 或工具。"
+[[plugin.entries]]
+id = "bridge_set_plugin"
+name = "启停机器人插件"
+timeout = 90.0
+description = "启动或停止单个机器人插件（不重启整座桥；停用会记进 [bridge].disabled_plugins，下次启动不再拉起）。"
+[[plugin.entries]]
+id = "bridge_delete_plugin"
+name = "删除机器人插件"
+timeout = 120.0
+description = "删除一个机器人插件：先停用，再删掉插件文件（只允许删插件目录里的东西）；purge_state=true 时连带清理它的数据/缓存目录。"
+[[plugin.entries]]
+id = "bridge_reload"
+timeout = 180.0
+name = "重载机器人插件"
+description = "重新扫描并加载机器人插件目录。"
+[[plugin.entries]]
+id = "bridge_market_sources"
+timeout = 300.0
+name = "机器人插件市场源"
+description = "列出可用的机器人插件市场源（MaiBot / NoneBot2 / AstrBot / Koishi）及其可用状态。"
+[[plugin.entries]]
+id = "bridge_market_search"
+timeout = 300.0
+name = "搜索机器人插件"
+description = "在官方插件索引里搜索 MaiBot / NoneBot2 / AstrBot / Koishi 插件（只读，不安装；不限源时按源轮流返回，避免单个大商店吃光结果）。"
+[[plugin.entries]]
+id = "bridge_market_install"
+timeout = 300.0
+name = "安装机器人插件"
+description = "从市场源安装一个机器人插件到隔离的插件目录，并热重载。只接受官方索引里的条目。"
+
+[adapter]
+# 宿主校验器只接受 gateway（只影响日志与启动排序，管线由适配器自己决定）。
+mode = "gateway"
+# 适配器先于普通插件启动；数字越小越早。
+priority = 20

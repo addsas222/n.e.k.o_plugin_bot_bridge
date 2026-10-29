@@ -1,0 +1,10 @@
+{
+  "name": "koishi-plugin-smoke",
+  "version": "1.0.0",
+  "description": "bot_bridge 冒烟夹具：注册 smoke 命令，回显参数",
+  "main": "index.js",
+  "keywords": ["koishi", "plugin"],
+  "koishi": {
+    "public": true
+  }
+}

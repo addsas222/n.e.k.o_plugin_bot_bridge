@@ -1,0 +1,8 @@
+{
+  "manifest_version": 2,
+  "id": "neko.hello_neko",
+  "name": "N.E.K.O. 打招呼示例",
+  "version": "1.0.0",
+  "description": "示例麦麦插件：命令、工具、API、事件处理器各一个，用来验证 bot_bridge 的转接链路。",
+  "author": "local"
+}

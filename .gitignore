@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+store.db
+botdata.sqlite3
+data/
+cache/
+config/config.json
+tests/stub-report.txt
+tests/live-report.txt
+
+# 机器本地运行配置（首次运行由 config.example.toml 生成，不含在仓库里）
+config/

@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "version": "1.0.0",
+  "name": "Hello MaiBot 测试插件",
+  "description": "bot_bridge 的 MaiBot 兼容层测试插件（maibot_sdk 2.x 布局）。",
+  "author": {
+    "name": "bot_bridge tests",
+    "url": "https://github.com/local/bot-bridge"
+  },
+  "license": "MIT",
+  "urls": {
+    "repository": "https://github.com/local/bot-bridge",
+    "homepage": "https://github.com/local/bot-bridge"
+  },
+  "host_application": {
+    "min_version": "1.0.0",
+    "max_version": "1.2.99"
+  },
+  "sdk": {
+    "min_version": "2.0.0",
+    "max_version": "2.99.99"
+  },
+  "dependencies": [],
+  "capabilities": [
+    "send.text",
+    "llm.generate",
+    "database.count",
+    "api.list",
+    "config.get"
+  ],
+  "i18n": {
+    "default_locale": "zh-CN",
+    "locales_path": "_locales",
+    "supported_locales": [
+      "zh-CN"
+    ]
+  },
+  "id": "bot-bridge-tests.hello-maibot"
+}

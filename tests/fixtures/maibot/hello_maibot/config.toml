@@ -1,0 +1,6 @@
+[plugin]
+config_version = "1.0.0"
+enabled = true
+
+[greeting]
+message = "你好，我是 hello_maibot"
