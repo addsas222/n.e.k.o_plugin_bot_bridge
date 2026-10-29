@@ -40,6 +40,24 @@ ANYWHERE_SKIP = {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 SKIP_SUFFIX = (".pyc", ".pyo", ".pyd", ".log", ".bak", ".compilecheck")
 SKIP_NAME_PARTS = (".bak-", ".bak.", ".DS_Store")
 
+#: 打进 zip 时按文本处理、需要把 CRLF 归一成 LF 的后缀。
+#: 为什么必须做：CI 用 LF 检出、本机 git 用 CRLF，同一份源码打出来的 zip 字节不同，
+#: 「本地验过的 sha」和「发出去的 sha」就对不上，发布无法自证。
+TEXT_SUFFIX = {
+    ".py", ".pyi", ".md", ".txt", ".toml", ".json", ".yaml", ".yml",
+    ".tsx", ".ts", ".mjs", ".cjs", ".js", ".css", ".html", ".cfg", ".ini",
+}
+#: 固定时间戳（zip 会记录每个条目的 mtime；不固定就每次构建都不同）
+FIXED_ZIP_TIME = (2026, 10, 29, 0, 0, 0)
+
+
+def _payload(path: Path) -> bytes:
+    """读条目内容；文本文件把 CRLF 归一成 LF（见 TEXT_SUFFIX 的说明）。"""
+    raw = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIX:
+        return raw.replace(b"\r\n", b"\n")
+    return raw
+
 
 def keep(path: Path, root: Path) -> bool:
     rel = path.relative_to(root)
@@ -78,7 +96,14 @@ def main() -> int:
     files = sorted(p for p in root.rglob("*") if p.is_file() and keep(p, root))
     with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for path in files:
-            zf.write(path, arcname=f"bot_bridge/{path.relative_to(root).as_posix()}")
+            info = zipfile.ZipInfo(
+                f"bot_bridge/{path.relative_to(root).as_posix()}",
+                date_time=FIXED_ZIP_TIME,
+            )
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o644 << 16
+            zf.writestr(info, _payload(path), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
 
     digest = hashlib.sha256(target.read_bytes()).hexdigest()
 
