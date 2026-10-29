@@ -13,13 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # 测试要 import 真实的 plugin.sdk（见 tests/support.py），所以得有一棵
-      # N.E.K.O. 源码树。上游仓库 570MB，用 sparse-checkout 只取 plugin/。
+      # N.E.K.O. 源码树。上游仓库 570MB，用 sparse-checkout 只取必需的两处：
+      #   plugin/  —— SDK 本体
+      #   utils/   —— plugin/sdk/shared/core/cards.py 会 import utils.plugin_card_fields
+      #              （utils/__init__.py 是空的，不会牵出它那些重依赖）
       - name: Checkout N.E.K.O. source tree (plugin.sdk)
         uses: actions/checkout@v4
         with:
           repository: addsas222/N.E.K.O
           path: neko
-          sparse-checkout: plugin
+          sparse-checkout: |
+            plugin
+            utils
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
